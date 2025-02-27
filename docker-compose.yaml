@@ -1,0 +1,38 @@
+services:
+  registry:
+    container_name: registry
+    image: registry:2
+    restart: always
+    environment:
+      - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry
+      - REGISTRY_AUTH=htpasswd
+      - REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
+      - REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm
+    volumes:
+      - ./registry-data:/var/lib/registry
+      - ./auth:/auth
+    networks:
+      - registry-network
+  ssl_generator:
+    container_name: ssl_generator
+    build: 
+      context: .
+      dockerfile: ./dockers/openssl/Dockerfile
+    volumes:
+      - ./certs:/app
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./auth:/auth
+      - ./certs:/certs
+    networks:
+      - registry-network
+    depends_on:
+      - registry
+
+networks:
+  registry-network:
