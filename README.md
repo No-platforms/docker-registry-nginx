@@ -17,6 +17,12 @@ Or install localy htpasswd on ubuntu:
 sudo apt install apache2-utils
 ```
 
+Then create your password:
+
+```bash
+htpasswd -Bbn [username] [password] > auth/htpasswd
+```
+
 Configure Nginx by creating an nginx.conf file with appropriate SSL and proxy settings9.
 
 Obtain SSL certificates and place them in the certs directory.
